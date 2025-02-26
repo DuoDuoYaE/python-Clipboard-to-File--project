@@ -39,14 +39,14 @@ Or Packaging program:
 pyinstaller --onefile --windowed --icon=src/invite.ico src/Main.py
 ```
 
-## [Windows]() How to start the folder path of the system boot
+## ~~[Windows]() How to start the folder path of the system boot~~
 
-* The directory where the system starts automatically：`shell:Common Startup`
-* The directory that the user starts automatically：`shell:Startup`
+* ~~The directory where the system starts automatically：`shell:Common Startup`~~
+* ~~The directory that the user starts automatically：`shell:Startup`~~
 
-## Building the Executable
+Do not add it to the boot folder, as there will be a scramble.Building the Executable
 
-To package the application as an executable, use the following command:
+## To package the application as an executable, use the following command:
 
 ```
 python setup.py build
