@@ -1,8 +1,4 @@
 tkinter
 keyboard
-json
-winsound
-time
-os
-sys
-io
+pyperclip
+tkinterdnd2

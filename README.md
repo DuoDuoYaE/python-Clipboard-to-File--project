@@ -39,6 +39,10 @@ Or Packaging program:
 pyinstaller --onefile --windowed --icon=src/invite.ico src/Main.py
 ```
 
+```
+pyinstaller -F -w src/main.py --additional-hooks-dir=.
+```
+
 ## ~~[Windows]() How to start the folder path of the system boot~~
 
 * ~~The directory where the system starts automatically：`shell:Common Startup`~~
