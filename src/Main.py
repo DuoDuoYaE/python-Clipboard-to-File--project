@@ -9,6 +9,54 @@ import sys
 import io
 import threading
 from tkinter import filedialog
+from tkinterdnd2 import DND_FILES, TkinterDnD
+
+
+class CreateToolTip:
+    """
+    创建一个工具提示类
+    """
+
+    def __init__(self, widget, text='widget info'):
+        self.widget = widget
+        self.text = text
+        self.tipwindow = None
+        self.widget.bind('<Enter>', self.on_enter)
+        self.widget.bind('<Leave>', self.on_leave)
+
+    def showtip(self, text, x, y):
+        "显示提示信息"
+        if self.tipwindow or not text:
+            return
+        x = self.widget.winfo_rootx() + x
+        y = self.widget.winfo_rooty() + y + 20  # 在鼠标位置的正下方显示
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(tw,
+                         text=text,
+                         justify=tk.LEFT,
+                         background="#F1F1F1",
+                         relief=tk.SOLID,
+                         borderwidth=1,
+                         font=("tahoma", "12", "normal"))
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tipwindow
+        self.tipwindow = None
+        if tw:
+            tw.destroy()
+
+    def on_enter(self, event):
+        # 当鼠标进入按钮区域时显示提示信息
+        self.widget['cursor'] = 'question_arrow'
+        self.showtip(self.text, event.x, event.y)
+
+    def on_leave(self, event):
+        # 当鼠标离开按钮区域时隐藏提示信息
+        self.hidetip()
+        self.widget['cursor'] = ''
 
 
 class Home:
@@ -22,6 +70,9 @@ class Home:
         self.init_ui()
         self.bind_shortcuts(self.key_bind)
         self.init_clipboard()
+        # 绑定拖拽事件
+        self.root.drop_target_register(DND_FILES)
+        self.root.dnd_bind('<<Drop>>', self.drop_filePath)
 
     def load_settings(self):
         if os.path.exists(self.config_file):
@@ -56,6 +107,12 @@ class Home:
         self.notebook.add(self.frame_setting, text='Settings')
         self.notebook.pack(expand=True, fill='both')
 
+    def drop_filePath(self, event):
+        file_path = event.data
+        # file_name = file_path.split("/")[-1]  # 获取文件名称
+        self.file_path_entry.delete(0, tk.END)  # 清空输入框
+        self.file_path_entry.insert(0, file_path)  # 插入路径
+
     def create_home_frame(self):
         self.current_text_label = tk.Label(self.frame_home,
                                            text="The currently selected text",
@@ -76,10 +133,24 @@ class Home:
         self.file_path_entry.insert(0, self.settings.get('Default file path'))
         self.file_path_entry.pack(pady=5)
 
-        self.button_save = tk.Button(self.frame_home,
+        self.button_frame = tk.Frame(self.frame_home)
+        self.button_frame.pack(pady=10)
+
+        self.button_select_window = tk.Button(self.button_frame,
+                                              text="Select Window")
+        self.button_select_window.pack(side=tk.LEFT, padx=10)
+        self.tooltip = CreateToolTip(self.button_select_window,
+                                     "不知道如何实现让鼠标选取窗口读取窗口内文档地址址")
+
+        self.button_select_file = tk.Button(self.button_frame,
+                                            text="Select File",
+                                            command=self.file_path)
+        self.button_select_file.pack(side=tk.LEFT, padx=10)
+
+        self.button_save = tk.Button(self.button_frame,
                                      text="Save Clipboard Text to File",
                                      command=self.save_clipboard_to_file)
-        self.button_save.pack(pady=10)
+        self.button_save.pack(side=tk.LEFT, padx=10)
 
         self.help_text = "Select the text, then press the shortcut key to save it to a file."
         self.toggle_frame_help = ToggleFrame(
@@ -88,9 +159,12 @@ class Home:
             button_text="How to use? - Fold / Unfold",
             content_frame_height=50)
 
-    def file_path(self, entry):
+    def file_path(self):
         self.path = filedialog.askopenfilename()
-        return self.path
+        if self.path == '':
+            return
+        self.file_path_entry.delete(0, tk.END)
+        return self.file_path_entry.insert(tk.END, self.path)
 
     def create_settings_frame(self):
         self.title_label = tk.Label(self.frame_setting,
@@ -299,7 +373,8 @@ class ToggleFrame:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    # root = tk.Tk()
+    root = TkinterDnD.Tk()
     root.title("Clipboard to File")
     initial_width = 450
     initial_height = 650
