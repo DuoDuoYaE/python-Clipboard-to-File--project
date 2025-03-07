@@ -108,7 +108,7 @@ class Home:
         self.notebook.pack(expand=True, fill='both')
 
     def drop_filePath(self, event):
-        file_path = event.data
+        file_path = event.data.strip('{}')
         # file_name = file_path.split("/")[-1]  # 获取文件名称
         self.file_path_entry.delete(0, tk.END)  # 清空输入框
         self.file_path_entry.insert(0, file_path)  # 插入路径

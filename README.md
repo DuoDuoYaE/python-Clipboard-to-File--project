@@ -36,11 +36,7 @@ python src/Main.py
 Or Packaging program:
 
 ```
-pyinstaller --onefile --windowed --icon=src/invite.ico src/Main.py
-```
-
-```
-pyinstaller -F -w src/main.py --additional-hooks-dir=.
+pyinstaller -F -w src/main.py --additional-hooks-dir=. --icon=src/invite.ico 
 ```
 
 ## ~~[Windows]() How to start the folder path of the system boot~~
@@ -49,14 +45,6 @@ pyinstaller -F -w src/main.py --additional-hooks-dir=.
 * ~~The directory that the user starts automatically：`shell:Startup`~~
 
 Do not add it to the boot folder, as there will be a scramble.Building the Executable
-
-## To package the application as an executable, use the following command:
-
-```
-python setup.py build
-```
-
-This will create a standalone executable in the `dist` directory.
 
 ## Usage
 
